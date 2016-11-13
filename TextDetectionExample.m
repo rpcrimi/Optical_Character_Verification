@@ -24,17 +24,25 @@
 % detected alongside the text.
 
 colorImage = imread('sample1.png');
+destination = 'unlabeled_images/sample1/';
+output_name = 'char';
+format = '.png';
 I = rgb2gray(colorImage);
 
 % Detect MSER regions.
-[mserRegions] = detectMSERFeatures(I,'RegionAreaRange',[200 8000],'ThresholdDelta',2);
+[mserRegions, mserConnComp] = detectMSERFeatures(I,'RegionAreaRange',[200 8000],'ThresholdDelta',2);
 
-figure
-imshow(I)
-hold on
-plot(mserRegions, 'showPixelList', true,'showEllipses',false)
-title('MSER regions')
-hold off
+% figure
+% imshow(I)
+% hold on
+% plot(mserRegions, 'showPixelList', true,'showEllipses',false)
+% title('MSER regions')
+% hold off
+
+%% Step 2: ...
+
+mserStats = regionprops(mserConnComp, 'BoundingBox', 'Eccentricity', ...
+    'Solidity', 'Extent', 'Euler', 'Image');
 
 %% Step 4: Merge Text Regions For Final Detection Result
 % At this point, all the detection results are composed of individual text
@@ -64,7 +72,13 @@ xmax = xmin + bboxes(:,3) - 1;
 ymax = ymin + bboxes(:,4) - 1;
 
 % Expand the bounding boxes by a small amount.
-expansionAmount = 0.02;
+%expansionAmount = 0.02;
+
+% Do not expand the bounding boxes.  This seems to help prevent separate
+% letters' boxes from overlapping and being combined.
+% Idea: instead shrink the boxes, combine, then expand.
+expansionAmount = 0.00;
+
 xmin = (1-expansionAmount) * xmin;
 ymin = (1-expansionAmount) * ymin;
 xmax = (1+expansionAmount) * xmax;
@@ -143,6 +157,18 @@ ITextRegion = insertShape(colorImage, 'Rectangle', textBBoxes,'LineWidth',3);
 figure
 imshow(ITextRegion)
 title('Detected Text')
+
+%% Save unlabeled characters.  TODO: vectorize.
+
+for box = 1:1:size(textBBoxes,1)
+    x1 = floor( textBBoxes(box,1) );
+    y1 = floor( textBBoxes(box,2) );
+    x2 = ceil ( textBBoxes(box,1) + textBBoxes(box,3) );
+    y2 = ceil ( textBBoxes(box,2) + textBBoxes(box,4) );
+    char_image = colorImage(y1:y2,x1:x2,:);
+    filename = sprintf('%s%s_%d%s',destination,output_name,box,format);
+    imwrite(char_image,filename);
+end
 
 %% Step 5: Recognize Detected Text Using OCR
 % After detecting the text regions, use the |ocr| function to recognize the
