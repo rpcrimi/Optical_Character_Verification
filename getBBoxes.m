@@ -8,7 +8,7 @@
 
 % Modified from MATLAB's TextDetectionExample
 
-function [textBBoxes] = getBBoxes(image, destination, output_name, format)
+function [textBBoxes] = getBBoxes(image)
 
     %% Steps 1-2 ...
     
@@ -96,17 +96,5 @@ function [textBBoxes] = getBBoxes(image, destination, output_name, format)
     figure
     imshow(ITextRegion)
     title('Detected Text')
-    
-    %% Save unlabeled characters.  TODO: vectorize.
-
-    for box = 1:1:size(textBBoxes,1)
-        x1 = floor( textBBoxes(box,1) );
-        y1 = floor( textBBoxes(box,2) );
-        x2 = ceil ( textBBoxes(box,1) + textBBoxes(box,3) );
-        y2 = ceil ( textBBoxes(box,2) + textBBoxes(box,4) );
-        char_image = colorImage(y1:y2,x1:x2,:);
-        filename = sprintf('%s%s_%d%s',destination,output_name,box,format);
-        imwrite(char_image,filename);
-    end
     
 end

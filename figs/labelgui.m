@@ -1,35 +1,35 @@
-function varargout = labelfig(varargin)
-% LABELFIG MATLAB code for labelfig.fig
-%      LABELFIG, by itself, creates a new LABELFIG or raises the existing
+function varargout = labelgui(varargin)
+% LABELGUI MATLAB code for labelgui.fig
+%      LABELGUI, by itself, creates a new LABELGUI or raises the existing
 %      singleton*.
 %
-%      H = LABELFIG returns the handle to a new LABELFIG or the handle to
+%      H = LABELGUI returns the handle to a new LABELGUI or the handle to
 %      the existing singleton*.
 %
-%      LABELFIG('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in LABELFIG.M with the given input arguments.
+%      LABELGUI('CALLBACK',hObject,eventData,handles,...) calls the local
+%      function named CALLBACK in LABELGUI.M with the given input arguments.
 %
-%      LABELFIG('Property','Value',...) creates a new LABELFIG or raises the
+%      LABELGUI('Property','Value',...) creates a new LABELGUI or raises the
 %      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before labelfig_OpeningFcn gets called.  An
+%      applied to the GUI before labelgui_OpeningFcn gets called.  An
 %      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to labelfig_OpeningFcn via varargin.
+%      stop.  All inputs are passed to labelgui_OpeningFcn via varargin.
 %
 %      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
 %      instance to run (singleton)".
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
-% Edit the above text to modify the response to help labelfig
+% Edit the above text to modify the response to help labelgui
 
-% Last Modified by GUIDE v2.5 13-Nov-2016 13:10:53
+% Last Modified by GUIDE v2.5 13-Nov-2016 15:05:27
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @labelfig_OpeningFcn, ...
-                   'gui_OutputFcn',  @labelfig_OutputFcn, ...
+                   'gui_OpeningFcn', @labelgui_OpeningFcn, ...
+                   'gui_OutputFcn',  @labelgui_OutputFcn, ...
                    'gui_LayoutFcn',  [] , ...
                    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
@@ -43,61 +43,65 @@ else
 end
 % End initialization code - DO NOT EDIT
 
-% --- Executes just before labelfig is made visible.
-function labelfig_OpeningFcn(hObject, eventdata, handles, varargin)
+% --- Executes just before labelgui is made visible.
+function labelgui_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% varargin   command line arguments to labelfig (see VARARGIN)
+% varargin   command line arguments to labelgui (see VARARGIN)
 
-% Choose default command line output for labelfig
+% Choose default command line output for labelgui
 handles.output = hObject;
+
+% Image, bounding boxes, and labels data
+textImage = varargin{1};
+bboxes = varargin{2};
+totalChars = size(bboxes,1);
+% Set handles
+handles.textImage = textImage;
+handles.bboxes = bboxes;
+handles.totalChars = totalChars;
+handles.currentChar = 1;
+handles.labels = strings(totalChars,1);
 
 % Update handles structure
 guidata(hObject, handles);
 
-% This sets up the initial plot - only do when we are invisible
-% so window can get raised using labelfig.
-if strcmp(get(hObject,'Visible'),'off')
-    plot(rand(5));
-end
+showCharacter(handles);
 
-% UIWAIT makes labelfig wait for user response (see UIRESUME)
-% uiwait(handles.figure1);
+% UIWAIT makes labelgui wait for user response (see UIRESUME)
+uiwait(handles.figure1);
+
+
+% Display the character image on the axes
+function showCharacter(handles)
+
+img = handles.textImage;
+bboxes = handles.bboxes;
+idx = handles.currentChar;
+x1 = floor( bboxes(idx,1) );
+y1 = floor( bboxes(idx,2) );
+x2 = ceil ( bboxes(idx,1) + bboxes(idx,3) );
+y2 = ceil ( bboxes(idx,2) + bboxes(idx,4) );
+img = img(y1:y2,x1:x2,:);
+
+axes(handles.axes_image);
+imshow(img);
 
 
 % --- Outputs from this function are returned to the command line.
-function varargout = labelfig_OutputFcn(hObject, eventdata, handles)
+function varargout = labelgui_OutputFcn(hObject, eventdata, handles)
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
 % Get default command line output from handles structure
-varargout{1} = handles.output;
+%varargout{1} = handles.output;
 
-% --- Executes on button press in pushbutton1.
-function pushbutton1_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-axes(handles.axes1);
-cla;
-
-popup_sel_index = get(handles.popupmenu1, 'Value');
-switch popup_sel_index
-    case 1
-        plot(rand(5));
-    case 2
-        plot(sin(1:0.01:25.99));
-    case 3
-        bar(1:.5:10);
-    case 4
-        plot(membrane);
-    case 5
-        surf(peaks);
-end
+varargout{1} = handles.labels;
+delete(handles.figure1);
 
 
 % --------------------------------------------------------------------
@@ -139,36 +143,27 @@ end
 delete(handles.figure1)
 
 
-% --- Executes on selection change in popupmenu1.
-function popupmenu1_Callback(hObject, eventdata, handles)
-% hObject    handle to popupmenu1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = get(hObject,'String') returns popupmenu1 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from popupmenu1
-
-
-% --- Executes during object creation, after setting all properties.
-function popupmenu1_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popupmenu1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-     set(hObject,'BackgroundColor','white');
-end
-
-set(hObject, 'String', {'plot(rand(5))', 'plot(sin(1:0.01:25))', 'bar(1:.5:10)', 'plot(membrane)', 'surf(peaks)'});
-
-
 % --- Executes on button press in btn_skip.
 function btn_skip_Callback(hObject, eventdata, handles)
 % hObject    handle to btn_skip (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+idx = handles.currentChar;
+if(idx < handles.totalChars)
+    % Set label to empty text
+    handles.labels(idx) = '';
+    
+    % Updates for new input
+    handles.input_label.String = '';
+    handles.currentChar = idx + 1;
+    
+    % Update handles structure
+    guidata(hObject, handles);
+    
+    % Show updated image
+    showCharacter(handles);
+end
 
 
 % --- Executes on button press in btn_previous.
@@ -177,6 +172,19 @@ function btn_previous_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+idx = handles.currentChar;
+if(idx > 1)
+    % Updates for new input
+    handles.input_label.String = '';
+    handles.currentChar = idx - 1;
+    
+    % Update handles structure
+    guidata(hObject, handles);
+    
+    % Show updated image
+    showCharacter(handles);
+end
+
 
 % --- Executes on button press in btn_submit.
 function btn_submit_Callback(hObject, eventdata, handles)
@@ -184,6 +192,23 @@ function btn_submit_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+idx = handles.currentChar;
+if(idx <= handles.totalChars)
+    % Set label to text entry
+    handles.labels(idx) = handles.input_label.String;
+    
+    % Updates for new input
+    handles.input_label.String = '';
+    if(idx < handles.totalChars)
+        handles.currentChar = idx + 1;
+    end
+    
+    % Update handles structure
+    guidata(hObject, handles);
+    
+    % Show updated image
+    showCharacter(handles);
+end
 
 
 function input_label_Callback(hObject, eventdata, handles)
@@ -223,3 +248,18 @@ function figure1_WindowButtonUpFcn(hObject, eventdata, handles)
 % hObject    handle to figure1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes when user attempts to close figure1.
+function figure1_CloseRequestFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+if isequal(get(hObject, 'waitstatus'), 'waiting')
+    % The GUI is still in UIWAIT, us UIRESUME
+    uiresume(hObject);
+else
+    % The GUI is no longer waiting, close it
+    delete(hObject);
+end
