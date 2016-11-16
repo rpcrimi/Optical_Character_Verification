@@ -22,7 +22,7 @@ function varargout = labelgui(varargin)
 
 % Edit the above text to modify the response to help labelgui
 
-% Last Modified by GUIDE v2.5 13-Nov-2016 15:05:27
+% Last Modified by GUIDE v2.5 15-Nov-2016 21:05:40
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -262,4 +262,23 @@ if isequal(get(hObject, 'waitstatus'), 'waiting')
 else
     % The GUI is no longer waiting, close it
     delete(hObject);
+end
+
+
+% --- Executes on key press with focus on input_label and none of its controls.
+function input_label_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to input_label (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+
+% Call submit button when return key is pressed and then return UI focus to
+% the text entry.
+key = get(gcf,'CurrentKey');
+if(strcmp (key , 'return'))
+    uicontrol(handles.btn_submit);
+    btn_submit_Callback(hObject, eventdata, handles);
+    uicontrol(handles.input_label);
 end
