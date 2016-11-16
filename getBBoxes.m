@@ -13,8 +13,8 @@ function [textBBoxes] = getBBoxes(image)
     %% Steps 1-2 ...
     
     colorImage = imread(image);
-    I = rgb2gray(colorImage);
-    
+    %I = rgb2gray(colorImage);
+    I = colorImage;
     % Detect MSER regions.
     [mserRegions, mserConnComp] = detectMSERFeatures( ...
         I,'RegionAreaRange',[200 8000],'ThresholdDelta',2);
@@ -57,9 +57,7 @@ function [textBBoxes] = getBBoxes(image)
     expandedBBoxes = [xmin ymin xmax-xmin+1 ymax-ymin+1];
     IExpandedBBoxes = insertShape(colorImage,'Rectangle',expandedBBoxes,'LineWidth',3);
 
-    figure
-    imshow(IExpandedBBoxes)
-    title('Expanded Bounding Boxes Text')
+    %figure, imshow(IExpandedBBoxes), title('Expanded Bounding Boxes Text')
     
     %% ...
     
@@ -93,8 +91,6 @@ function [textBBoxes] = getBBoxes(image)
     % Show the final text detection result.
     ITextRegion = insertShape(colorImage, 'Rectangle', textBBoxes,'LineWidth',3);
 
-    figure
-    imshow(ITextRegion)
-    title('Detected Text')
+    figure, imshow(ITextRegion), title('Detected Text')
     
 end
