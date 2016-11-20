@@ -1,12 +1,11 @@
 # Optical_Character_Verification
 
-Robert Crimi
+Robert Crimi,  
 Samuel Tobey
 
 Fall 2016 Project
 
 CSCI 5722 - Computer Vision - Dr. Ioana Fleming
-
 
 **Notes**
 
