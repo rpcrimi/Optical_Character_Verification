@@ -5,21 +5,26 @@ function [success] = charLabel(image, dest_labeled, dest_unlabeled, method, name
     imSqrDim = 150;
 
     bboxes = getBBoxes(image);
-    test = bboxes(:,:);
+    %bboxes = bboxes(1:4,:);
 
     switch method
         case 'Train'
-            letters = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
+            letters = {
+                'a','b','c','d','e','f','g','h','i','j','k','l','m', ...
+                'n','o','p','q','r','s','t','u','v','w','x','y','z', ...
+                'A','B','C','D','E','F','G','H','I','J','K','L','M', ...
+                'N','O','P','Q','R','S','T','U','V','W','X','Y','Z'
+            };
             exampleCounts = containers.Map(letters, zeros(size(letters)));
-            [labels] = labelgui(I,test);
+            [labels] = labelgui(I,bboxes);
             % Save labeled characters.
-            for i = 1:1:size(test,1)
+            for i = 1:1:size(bboxes,1)
                 character = char(labels(i));
                 if(character)
-                    x1 = floor( test(i,1) );
-                    y1 = floor( test(i,2) );
-                    x2 = ceil ( test(i,1) + test(i,3) );
-                    y2 = ceil ( test(i,2) + test(i,4) );
+                    x1 = floor( bboxes(i,1) );
+                    y1 = floor( bboxes(i,2) );
+                    x2 = ceil ( bboxes(i,1) + bboxes(i,3) );
+                    y2 = ceil ( bboxes(i,2) + bboxes(i,4) );
                     char_image = I(y1:y2,x1:x2,:);
                     pad = ceil(([imSqrDim imSqrDim] - size(char_image))/2);
                     char_image = padarray(char_image, pad, 255);
