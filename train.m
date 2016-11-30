@@ -23,7 +23,7 @@ function [nameAccuracy, totalAccuracy] = train(inputFolder, method)
     
     switch method
         case 'kNN'
-            predicted = knnclassify(testX, trainX, trainY, 3);
+            predicted = knnclassify(testX, trainX, trainY, 5, 'cosine');
         case 'SVM'
             pool = parpool; % Invoke workers
             options = statset('UseParallel',1);
@@ -43,7 +43,10 @@ function [nameAccuracy, totalAccuracy] = train(inputFolder, method)
             nameWrong = nameWrong + 1.0;
         end
     end
+    testY(1:10)
+    predicted(1:10)
     nameAccuracy = (length(testY)-nameWrong)/length(testY)
     totalAccuracy = (length(testY)-totalWrong)/length(testY)
+    confusionmat(testY, predicted)
 end
 
