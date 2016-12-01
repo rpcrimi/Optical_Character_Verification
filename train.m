@@ -1,4 +1,4 @@
-function [nameAccuracy, totalAccuracy] = train(inputFolder, method)
+function [nameAccuracy, letterAccuracy, totalAccuracy] = train(inputFolder, method)
     % Read png files into training set
     imageFiles = dir(strcat(inputFolder, '*.png'));
     nFiles = length(imageFiles);
@@ -23,7 +23,7 @@ function [nameAccuracy, totalAccuracy] = train(inputFolder, method)
     
     switch method
         case 'kNN'
-            predicted = knnclassify(testX, trainX, trainY, 5, 'cosine');
+            predicted = knnclassify(testX, trainX, trainY, 1, 'cosine');
         case 'SVM'
             pool = parpool; % Invoke workers
             options = statset('UseParallel',1);
@@ -31,22 +31,26 @@ function [nameAccuracy, totalAccuracy] = train(inputFolder, method)
             CVMdl = crossval(Mdl,'Options',options)
     end
     
-    nameWrong = 0.0;
-    totalWrong = 0.0;
+    nameCorrect = 0.0;
+    letterCorrect = 0.0;
+    totalCorrect = 0.0;
     for i=1:length(testY)
         actual = strsplit(char(testY(i)), '_');
         pred = strsplit(char(predicted(i)), '_');
-        if ~strcmp(testY(i),predicted(i))
-            totalWrong = totalWrong + 1.0;
+        if strcmp(testY(i),predicted(i))
+            totalCorrect = totalCorrect + 1.0;
         end
-        if ~strcmp(actual(1), pred(1))
-            nameWrong = nameWrong + 1.0;
+        if strcmp(actual(1), pred(1))
+            nameCorrect = nameCorrect + 1.0;
+        end
+        if strcmp(actual(2), pred(2))
+            letterCorrect = letterCorrect + 1.0;
         end
     end
-    testY(1:10)
-    predicted(1:10)
-    nameAccuracy = (length(testY)-nameWrong)/length(testY)
-    totalAccuracy = (length(testY)-totalWrong)/length(testY)
-    confusionmat(testY, predicted)
+
+    nameAccuracy = nameCorrect/length(testY);
+    letterAccuracy = letterCorrect/length(testY);
+    totalAccuracy = totalCorrect/length(testY);
+    confusionmat(testY, predicted);
 end
 
