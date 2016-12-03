@@ -77,7 +77,7 @@ function [labels, images, labelsTestData, y1, y2] =  nn(inputFolder, name1, name
     %% Sparse autoencoder.
     
     rng('default');
-    hiddenSize1 = 100;
+    hiddenSize1 = 150;
     
     autoenc1 = trainAutoencoder(imagesTrain,hiddenSize1, ...
     'MaxEpochs',400, ...
@@ -95,7 +95,7 @@ function [labels, images, labelsTestData, y1, y2] =  nn(inputFolder, name1, name
     
     %% Second autoencoder
     
-    hiddenSize2 = 50;
+    hiddenSize2 = 75;
     autoenc2 = trainAutoencoder(feat1,hiddenSize2, ...
     'MaxEpochs',100, ...
     'L2WeightRegularization',0.002, ...
