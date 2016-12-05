@@ -37,7 +37,7 @@ Results from the neural network (without and with backpropagation) are stored in
 Or, for just character predictions:
 
 ```MATLAB
-[labels, images, labelsTestData, y1, y2] = nn('labeled_images/150/');
+[labels, images, labelsTestData, y1, y2] = nnChars('labeled_images/150/');
 ```
 
 Get information about the accuracy of the neural network's predictions.  See MATLAB's documentation for more information.
