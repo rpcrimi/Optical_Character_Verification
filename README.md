@@ -42,3 +42,5 @@ Get information about the accuracy of the neural network's predictions.  See MAT
 ```MATLAB
 [c,cm,ind,per] = confusion(labelsTestData,y2);
 ```
+
+Alternatively, results from both neural networks are stored in the output/ directory in .mat files.
