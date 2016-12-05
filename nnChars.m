@@ -1,30 +1,17 @@
-% nn.m
+% nnChars.m
 % Samuel P. Tobey, Robert Crimi
-% December 1, 2016
+% December 2, 2016
 % CSCI 5722 - Computer Vision - Dr. Ioana Fleming
 
-% Neural net for handwritten characters 'a'-'z' from two people.  52 labels
-% total.
+% Neural net for handwritten characters 'a'-'z'.  26 labels total.
 % Plot the confusion matrix, or the following code to analyze results:
 % >> [c,cm,ind,per] = confusion(labelsTestData,y2);
 
 % Modified from MATLAB's example: "Train Stacked Autoencoders for Image
 % Classification."
-% In MATLAB:
-% >> openExample('nnet/AutoencoderDigitsExample');
-% On the Web:
-% <https://www.mathworks.com/help/nnet/examples/training-a-deep-neural-network-for-digit-classification.html>
-
-% Other useful resources:
-% http://www.cs.cmu.edu/afs/cs/Web/Groups/AI/html/faqs/ai/neural/faq.html
-% >> nnstart;
-% >> nprtool;
 
 % Input:
 %   inputFolder     : String of directory with labeled images.
-%   name1           : The string of the first (alphabetical) person's
-%                     name in the image names.
-%   name2           : The string of the second name.
 % Output:
 %   labels          : 26 by n binary matrix containing 1's in the rows for
 %                     the label of the corresponding image.
@@ -34,17 +21,17 @@
 %   y2              : The predicted labels subset, with NN fine tuning.
 
 % Example usage:
-% >> [labels, images, labelsTestData, y1, y2] = nn('labeled_images/150/','bobby','sam');
+% >> [labels, images, labelsTestData, y1, y2] = nn('labeled_images/150/');
 
-function [labels, images, labelsTestData, y1, y2] =  nn(inputFolder, name1, name2)
+function [labels, images, labelsTestData, y1, y2] =  nnChars(inputFolder)
     %% Create labels matrix and images cell array.
     
     filesStruct = dir(strcat(inputFolder, '*.png'));
     nFiles = length(filesStruct);
     nTrain = uint64(nFiles*0.8);
     
-    % 52 labels: a-z for each of two people (Bobby, Samuel).
-    labels = zeros(52, nFiles);
+    % 26 labels: a-z.
+    labels = zeros(26, nFiles);
     images = cell(1, nFiles);
     
     % Used to convert chars to indices 1-26 (i.e. 'a'-'z').
@@ -55,14 +42,8 @@ function [labels, images, labelsTestData, y1, y2] =  nn(inputFolder, name1, name
         images{file} = imcomplement( ...
             imresize(imread(fileName), [32 NaN]));
         fileNameDetails = strsplit(filesStruct(file).name, { '.' , '_' } );
-        name = fileNameDetails{1};
         label_idx = double(fileNameDetails{2}) - char_shift;
-        switch name
-            case name1
-                labels(        label_idx , file ) = 1;
-            case name2
-                labels( (label_idx + 26) , file ) = 1;
-        end
+        labels( label_idx , file ) = 1;
     end
     
     % Set aside some data for testing, use the rest for training.
@@ -132,10 +113,9 @@ function [labels, images, labelsTestData, y1, y2] =  nn(inputFolder, name1, name
     
     y1 = deepnet(xTest);
     
-    % Confusion matrix is 52 by 52, plot as three separate figures.
-%     figure(); plotconfusion(labelsTestData(1:17,:),y1(1:17,:));
-%     figure(); plotconfusion(labelsTestData(18:35,:),y1(18:35,:));
-%     figure(); plotconfusion(labelsTestData(36:end,:),y1(36:end,:));
+    % Confusion matrix is 26 by 26.
+%     figure(); plotconfusion(labelsTestData(1:13,:),y1(1:13,:));
+%     figure(); plotconfusion(labelsTestData(14:26,:),y1(14:26,:));
     
     %% Fine tuning
     
@@ -150,9 +130,8 @@ function [labels, images, labelsTestData, y1, y2] =  nn(inputFolder, name1, name
 
     y2 = deepnet(xTest);
     
-    % Confusion matrix is 52 by 52, plot as three separate figures.
-%     figure(); plotconfusion(labelsTestData(1:17,:),y2(1:17,:));
-%     figure(); plotconfusion(labelsTestData(18:35,:),y2(18:35,:));
-%     figure(); plotconfusion(labelsTestData(36:end,:),y2(36:end,:));
-
+    % Confusion matrix is 26 by 26.
+%     figure(); plotconfusion(labelsTestData(1:13,:),y2(1:13,:));
+%     figure(); plotconfusion(labelsTestData(14:26,:),y2(14:26,:));
+    
 end
