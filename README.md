@@ -7,14 +7,11 @@ Fall 2016 Project
 
 CSCI 5722 - Computer Vision - Dr. Ioana Fleming
 
-**Notes**
-
- * Add figs/ to path in MATLAB to run the GUI in charLabel.m
-
-
 ##How to Use
 
 ###Label images
+
+*Note: Add figs/ directory to path in MATLAB to run the GUI in charLabel.m*
 
 ```MATLAB
 charLabel('source_images/bobby_bw.jpg', 'labeled_images/150/', 'unlabeled_images/', 'Train', 'bobby')
